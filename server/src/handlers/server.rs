@@ -1,12 +1,3 @@
-use axum::{
-    extract::{
-        ws::{Message, WebSocket, WebSocketUpgrade},
-        State,
-    },
-    response::{Html, IntoResponse},
-    routing::get,
-    Router,
-};
 use uuid::Uuid;
 
 use std::{
