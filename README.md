@@ -1,18 +1,14 @@
 # Radio Chat
 
 # Purpose
-I want to expand my software development skills specifically to better understand TCP/IP, HTTP, Sockets, and Web Sockets by using the lowest-level network options so that they are aware of the difficulties. I aim to create a discord-like chat application written in Rust; however.
+I want to expand my software development skills specifically to better understand TCP/IP, HTTP, Sockets, webRTC, and Web Sockets. I aim to create a Broadcast type application written in Rust using react for the UI. Think of Twitch but only a live audio stream where users can listen in and send messages to the broadcaster.
 
-
-## Server Set UP
-
-### Room search query for each search http api call
-### 127.0.0.1:8080/rooms
 
 ## Server Tools
 - Rust
 - Tokio
-- Axum
+- Actix
+- SQLx
 
 - Docker
 - Postgres
