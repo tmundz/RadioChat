@@ -1,4 +1,3 @@
-mod config;
 mod handlers;
 mod models;
 
@@ -11,14 +10,10 @@ use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 //use handlers::handlers::{add_user_handler, get_users_handler};
 
-use config::Config;
-use std::borrow::Borrow;
 use std::env;
-use std::sync::Arc;
 
 pub struct AppState {
     db: Pool<Postgres>,
-    env: Config,
 }
 use crate::handlers::handlers::{get_users_handler, login_handler, register_user_handler};
 
@@ -29,8 +24,8 @@ async fn health_check() -> HttpResponse {
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    let config = Config::init();
-    let pool = match PgPoolOptions::new().connect(&config.db_url).await {
+    let db = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let pool = match PgPoolOptions::new().connect(&db).await {
         Ok(pool) => {
             println!("✅Connection to the database is successful!");
             pool
