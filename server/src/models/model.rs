@@ -35,6 +35,5 @@ pub struct CreateUserSchema {
 #[derive(Debug, Deserialize)]
 pub struct LoginUserSchema {
     pub user_name: String,
-    pub email: String,
     pub password: String,
 }

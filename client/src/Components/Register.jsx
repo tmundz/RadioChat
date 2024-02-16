@@ -9,13 +9,28 @@ export const Register = () => {
 
 
     // POST create account
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        //if Create success 
-        // need to set up the backend calls
-        //get pages
-        navigate("/users");
-        console.log(user_name);
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_name,
+                    email,
+                    password
+                })
+            });
+            if (!response.ok) {
+                throw new Error('Username or email is already in use')
+            }
+
+            const data = await response.json();
+            console.log('Submission successful', data);
+            navigate("/users")
+        } catch (error) {
+            console.error("Error during form submision: ", error);
+        }
     };
 
     const handleLogin = (e) => {
@@ -26,17 +41,17 @@ export const Register = () => {
     return (
         <>
         <div className="register-form-container">
-            <form>
-                <label for="user_name">User Name</label>
-                <input value={user_name} onChange={(e) => setUserName(e.target.value)} type="user_name" id="user_name" name="user_name"/>
-                <label for="user_name">Email</label>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor="user_name">User Name</label>
+                <input value={user_name} onChange={(e) => setUserName(e.target.value)} type="text" id="user_name" name="user_name"/>
+                <label htmlFor="user_name">Email</label>
                 <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" id="email" name="email"/>
-                <label for="Password">Password</label>
+                <label htmlFor="password">Password</label>
                 <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" id="password" name="password"/>
                 <button type="submit">Submit</button>
             </form>
             <button onClick={() => handleLogin()}>Have an account? Login here.</button>
         </div>
         </>
-    )
-}
+    );
+};

@@ -8,6 +8,7 @@ export const Login = (props) => {
 
     // POST check login 
     const handleSubmit = (e) => {
+        
         //if  login success 
         // need to set up the backend calls
         //get pages
@@ -24,9 +25,9 @@ export const Login = (props) => {
         <>
         <div className="auth-form-container">
             <form>
-                <label for="user_name">User Name</label>
+                <label htmlFor="user_name">User Name</label>
                 <input value={user_name} onChange={(e) => setUserName(e.target.value)} type="user_name" id="user_name" name="user_name"/>
-                <label for="Password">Password</label>
+                <label htmlFor="Password">Password</label>
                 <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" id="password" name="password"/>
                 <button onClick={() => handleSubmit()}>Submit</button>
             </form>

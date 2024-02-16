@@ -6,7 +6,7 @@ use actix_cors::Cors;
 use actix_web::http::header;
 use actix_web::{web, App, HttpResponse, HttpServer};
 use dotenv::dotenv;
-use models::user_queries::get_users;
+use models::user_queries::{get_users, register_user};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 //use handlers::handlers::{add_user_handler, get_users_handler};
@@ -20,7 +20,7 @@ pub struct AppState {
     db: Pool<Postgres>,
     env: Config,
 }
-use crate::handlers::handlers::get_users_handler;
+use crate::handlers::handlers::{get_users_handler, login_handler, register_user_handler};
 
 async fn health_check() -> HttpResponse {
     HttpResponse::Ok().finish()
@@ -59,6 +59,8 @@ async fn main() -> std::io::Result<()> {
             .route("/health_check", web::get().to(health_check))
             //.route("/api/get_users", web::get().to(get_users_handler))
             .service(get_users_handler)
+            .service(login_handler)
+            .service(register_user_handler)
     })
     .bind("127.0.0.1:8080")?
     .run()
