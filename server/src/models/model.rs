@@ -18,6 +18,20 @@ pub struct UserModel {
     pub last_login: Option<chrono::DateTime<chrono::Utc>>,
 }
 
+#[derive(Debug, Clone, FromRow, Deserialize, Serialize)]
+#[allow(non_snake_case)]
+pub struct PubUserModel {
+    pub uid: Uuid,
+    pub user_name: String,
+    pub email: String,
+    #[serde(rename = "createAt")]
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    #[serde(rename = "updateAt")]
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub is_active: bool,
+    pub last_login: Option<chrono::DateTime<chrono::Utc>>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub sub: String,
