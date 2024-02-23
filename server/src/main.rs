@@ -56,7 +56,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_users_handler)
             .service(login_handler)
             .service(register_user_handler)
-    }
+    })
     .bind("127.0.0.1:8080")?
     .run()
     .await

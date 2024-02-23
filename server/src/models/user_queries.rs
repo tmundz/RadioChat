@@ -83,6 +83,7 @@ pub async fn verify_user(
     db_pool: &sqlx::PgPool,
     body: &LoginUserSchema,
 ) -> Result<Option<PubUserModel>, sqlx::Error> {
+    println!("verify here");
     let user = sqlx::query_as::<_, PubUserModel>(
         "SELECT * FROM users WHERE user_name = $1 and password = $2",
     )
@@ -90,7 +91,8 @@ pub async fn verify_user(
     .bind(&body.password)
     .fetch_optional(db_pool)
     .await?;
-    Ok(Some(user.unwrap()))
+    println!("after query here");
+    Ok(Some(user).unwrap())
 }
 
 /*pub async fn delete_user(
