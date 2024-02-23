@@ -1,10 +1,9 @@
 use crate::models::{
     model::{CreateUserSchema, LoginUserSchema},
     user_queries,
-    user_queries::UserCheckResults,
+    user_queries::{register_user, UserCheckResults},
 };
 use actix_web::{get, post, web, HttpResponse, Responder};
-use futures::task::ArcWake;
 use serde_json;
 use sqlx::PgPool;
 
@@ -48,13 +47,22 @@ pub async fn register_user_handler(
             }))
         }
         UserCheckResults::Available => {
-            println!("in ok");
-            HttpResponse::Ok().json(serde_json::json!({
-                "status": "success",
-                "userName": body.user_name,
-                "email": body.email,
-                "message": "User Registered Successfully"
-            }))
+            match register_user(&db_pool, &body).await {
+                Ok(user) => HttpResponse::Ok().json(serde_json::json!({ //this is a db error
+                    "status": "success",
+                    "userName": body.user_name,
+                    "email": body.email,
+                    "message": "User Registered successfully",
+                })),
+                Err(_) => HttpResponse::InternalServerError().json(
+                    serde_json::json!({ //this is a db error
+                        "status": "failure",
+                        "userName": body.user_name,
+                        "email": body.email,
+                        "message": "Database Server Error",
+                    }),
+                ),
+            }
         }
     }
 }

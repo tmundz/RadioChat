@@ -6,6 +6,7 @@ export const Register = () => {
     const [user_name, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
 
     // POST create account
@@ -21,13 +22,18 @@ export const Register = () => {
                     password
                 })
             });
-            if (!response.ok) {
-                throw new Error('Username or email is already in use')
-            }
 
             const data = await response.json();
+            if (!response.ok) {
+                setErrorMsg(data.message || "Unknown error occured");
+                console.error("Error during submission: ", data.message);
+                alert(data.message);
+                throw new Error(data.message);
+            }
+
             console.log('Submission successful', data);
-            navigate("/users")
+            setErrorMsg("");
+            navigate("/users");
         } catch (error) {
             console.error("Error during form submision: ", error);
         }
@@ -50,6 +56,7 @@ export const Register = () => {
                 <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" id="password" name="password"/>
                 <button type="submit">Submit</button>
             </form>
+            {errorMsg && <div style={{ color: "red" }}>{errorMsg}</div>}
             <button onClick={() => handleLogin()}>Have an account? Login here.</button>
         </div>
         </>

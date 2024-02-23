@@ -51,7 +51,7 @@ pub async fn check_uname_email_availability(
     }
 
     if email_check.unwrap().is_some() {
-        return UserCheckResults::UserNameExists;
+        return UserCheckResults::EmailExists;
     }
     UserCheckResults::Available
 }
@@ -67,7 +67,8 @@ pub async fn register_user(
     let user = sqlx::query_as::<_, PubUserModel>(
         "INSERT 
         INTO users (uid, user_name, email, password, created_at, updated_at, last_login) 
-        VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())",
+        VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
+        RETURNING uid, user_name, email, created_at, updated_at, is_active, last_login",
     )
     .bind(uid)
     .bind(&body.user_name)
@@ -83,13 +84,13 @@ pub async fn verify_user(
     body: &LoginUserSchema,
 ) -> Result<Option<PubUserModel>, sqlx::Error> {
     let user = sqlx::query_as::<_, PubUserModel>(
-        "SELECT * FROM users WHERE user_name = $1 AND password = $2",
+        "SELECT * FROM users WHERE user_name = $1 and password = $2",
     )
     .bind(&body.user_name)
     .bind(&body.password)
     .fetch_optional(db_pool)
     .await?;
-    Ok(user)
+    Ok(Some(user.unwrap()))
 }
 
 /*pub async fn delete_user(
