@@ -4,10 +4,9 @@ use sqlx::FromRow;
 use tower::util::Optional;
 use uuid::Uuid;
 
-use crate::handlers::server::User;
-
 use super::model::CreateUserSchema;
 use super::model::LoginUserSchema;
+use super::model::LogoutUserSchema;
 use super::model::PubUserModel;
 use super::model::UserModel;
 
@@ -65,8 +64,7 @@ pub async fn register_user(
 ) -> Result<PubUserModel, sqlx::Error> {
     let uid = Uuid::new_v4();
     let user = sqlx::query_as::<_, PubUserModel>(
-        "INSERT 
-        INTO users (uid, user_name, email, password, created_at, updated_at, last_login) 
+        "INSERT INTO users (uid, user_name, email, password, created_at, updated_at, last_login) 
         VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
         RETURNING uid, user_name, email, created_at, updated_at, is_active, last_login",
     )
@@ -79,6 +77,7 @@ pub async fn register_user(
     Ok(user)
 }
 
+// TODO need to set up set active
 pub async fn verify_user(
     db_pool: &sqlx::PgPool,
     body: &LoginUserSchema,
@@ -91,36 +90,29 @@ pub async fn verify_user(
     .bind(&body.password)
     .fetch_optional(db_pool)
     .await?;
-    println!("after query here");
-    Ok(Some(user).unwrap())
+    Ok(user)
 }
 
-/*pub async fn delete_user(
-    db_pool: &PgPool,
-    user_name: &str,
-    password: &str,
-) -> Result<Uuid, sqlx::Error> {
-    let uid = Uuid::new_v4();
-    match sqlx::query!(
-        "INSERT INTO users (uid, user_name, password, created_at) VALUES ($1, $2, $3, NOW())",
-        uid,
-        user_name,
-        password,
+// TODO need to disable active
+pub async fn logout_user(
+    db_pool: &sqlx::PgPool,
+    body: &LogoutUserSchema,
+) -> Result<Option<PubUserModel>, sqlx::Error> {
+    println!("verify here");
+    let user = sqlx::query_as::<_, PubUserModel>(
+        "
+        UPDATE users 
+        SET is_active = $2 
+        WHERE uid = $1
+        RETURNING uid, user_name, email, created_at, updated_at, is_active, last_login,
+        ",
     )
-    .execute(db_pool)
-    .await
-    {
-        Ok(result) => println!(
-            "Query executed successfully. Rows affected: {}",
-            result.rows_affected()
-        ),
-
-        Err(e) => {
-            println!("Query execution error: {:?}", e);
-            return Err(e);
-        }
-    }
-}*/
+    .bind(&body.uid)
+    .bind(false)
+    .fetch_optional(db_pool)
+    .await?;
+    Ok(user)
+}
 
 pub async fn update_user(
     db_pool: &PgPool,

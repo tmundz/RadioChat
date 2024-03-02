@@ -1,21 +1,24 @@
 import React from "react";
-import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
-import './App.css';
-import { Register } from './Components/Register';
-import { Login } from './Components/Login';
-import {Users} from "./Components/Users";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import PrivateRoute from "./PrivateRoute";
+import "./App.css";
+import { Register } from "./Components/RegisterPage";
+import { Login } from "./Components/LoginPage";
+import { Home } from "./Components/HomePage";
 
 function App() {
-
   return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/users" element={<Users/>}/>
-        </Routes>
-      </BrowserRouter>
+    <BrowserRouter>
+      {/* public routes*/}
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/home/:username" element={<Home />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

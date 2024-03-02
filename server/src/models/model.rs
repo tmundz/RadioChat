@@ -51,3 +51,9 @@ pub struct LoginUserSchema {
     pub user_name: String,
     pub password: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct LogoutUserSchema {
+    pub uid: String,
+    pub user_name: String,
+}

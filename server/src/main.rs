@@ -2,14 +2,10 @@ mod handlers;
 mod models;
 
 use actix_cors::Cors;
-use actix_web::http::header;
-use actix_web::{web, App, HttpResponse, HttpServer};
+use actix_session::{storage::CookieSessionStore, SessionMiddleware};
+use actix_web::{cookie::Key, http::header, web, App, HttpResponse, HttpServer};
 use dotenv::dotenv;
-use models::user_queries::{get_users, register_user};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-
-//use handlers::handlers::{add_user_handler, get_users_handler};
-
 use std::env;
 
 pub struct AppState {
@@ -35,7 +31,6 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
-
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://127.0.0.1:3000")
@@ -51,8 +46,12 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .wrap(cors)
+            .wrap(
+                SessionMiddleware::builder(CookieSessionStore::default(), Key::from(&[0; 64]))
+                    .cookie_secure(false)
+                    .build(),
+            )
             .route("/health_check", web::get().to(health_check))
-            //.route("/api/get_users", web::get().to(get_users_handler))
             .service(get_users_handler)
             .service(login_handler)
             .service(register_user_handler)
